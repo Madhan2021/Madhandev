@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Madhan Raj M — .NET Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── TOKENS ── */
+    :root {
+      /* dark (default) */
+      --bg:        #0d1117;
+      --bg2:       #161b22;
+      --bg3:       #21262d;
+      --bg4:       #30363d;
+      --border:    #30363d;
+      --border2:   #484f58;
+      --text:      #e6edf3;
+      --text2:     #8b949e;
+      --text3:     #484f58;
+
+      /* syntax palette */
+      --syn-green:  #7ee787;
+      --syn-blue:   #79c0ff;
+      --syn-purple: #d2a8ff;
+      --syn-orange: #ffa657;
+      --syn-red:    #ff7b72;
+      --syn-teal:   #39d353;
+      --syn-yellow: #e3b341;
+      --syn-comment:#8b949e;
+
+      --btn-bg:    #238636;
+      --btn-fg:    #ffffff;
+      --ff: 'Inter', sans-serif;
+      --fm: 'JetBrains Mono', monospace;
+    }
+    [data-theme="light"] {
+      --bg:        #ffffff;
+      --bg2:       #f6f8fa;
+      --bg3:       #eaeef2;
+      --bg4:       #d0d7de;
+      --border:    #d0d7de;
+      --border2:   #afb8c1;
+      --text:      #1f2328;
+      --text2:     #656d76;
+      --text3:     #afb8c1;
+      --syn-green:  #116329;
+      --syn-blue:   #0550ae;
+      --syn-purple: #8250df;
+      --syn-orange: #953800;
+      --syn-red:    #cf222e;
+      --syn-teal:   #1a7f37;
+      --syn-yellow: #9a6700;
+      --syn-comment:#6e7781;
+      --btn-bg:    #1a7f37;
+      --btn-fg:    #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ff);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background .25s, color .25s;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* scrollbar progress line */
+    #progress {
+      position: fixed; top: 0; left: 0; z-index: 999;
+      height: 2px; background: var(--syn-green);
+      width: 0%; transition: width .1s linear;
+      box-shadow: 0 0 8px var(--syn-green);
+    }
+
+    /* ── CODE BG ── */
+    /* Faint code watermark scrolling in bg */
+    #code-bg {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      overflow: hidden; opacity: .028;
+      font-family: var(--fm); font-size: .7rem;
+      color: var(--syn-green);
+      line-height: 1.55; padding: 2rem;
+      white-space: pre;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+      animation: scrollCode 80s linear infinite;
+      user-select: none;
+    }
+    @keyframes scrollCode {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 300;
+      background: rgba(13,17,23,.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 2.5rem; height: 56px;
+      transition: background .25s;
+    }
+    [data-theme="light"] nav { background: rgba(255,255,255,.92); }
+
+    .nav-logo {
+      font-family: var(--fm); font-size: .88rem; font-weight: 600;
+      color: var(--syn-green); text-decoration: none; letter-spacing: -.01em;
+      display: flex; align-items: center; gap: .1rem;
+      opacity: 0; animation: fadeUp .5s .1s forwards;
+    }
+    .nav-logo .bracket { color: var(--syn-blue); }
+    .nav-logo .dot     { color: var(--syn-orange); }
+
+    .nav-links { display: flex; list-style: none; }
+    .nav-links li { opacity: 0; }
+    .nav-links li:nth-child(1){animation:fadeUp .5s .18s forwards}
+    .nav-links li:nth-child(2){animation:fadeUp .5s .23s forwards}
+    .nav-links li:nth-child(3){animation:fadeUp .5s .28s forwards}
+    .nav-links li:nth-child(4){animation:fadeUp .5s .33s forwards}
+    .nav-links li:nth-child(5){animation:fadeUp .5s .38s forwards}
+    .nav-links li:nth-child(6){animation:fadeUp .5s .43s forwards}
+    .nav-links a {
+      color: var(--text2); text-decoration: none;
+      font-size: .72rem; font-family: var(--fm);
+      padding: .28rem .75rem; border-radius: 4px;
+      transition: color .15s, background .15s; display: block;
+    }
+    .nav-links a::before { content: '// '; color: var(--text3); font-size: .65rem; }
+    .nav-links a:hover, .nav-links a.active { color: var(--syn-green); background: rgba(126,231,135,.07); }
+
+    .nav-right { display: flex; align-items: center; gap: .8rem; opacity: 0; animation: fadeUp .5s .48s forwards; }
+    .nav-status {
+      display: flex; align-items: center; gap: .4rem;
+      font-family: var(--fm); font-size: .65rem; color: var(--syn-teal);
+      padding: .25rem .7rem; border: 1px solid rgba(57,211,83,.2);
+      border-radius: 20px; background: rgba(57,211,83,.06);
+    }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--syn-teal); animation: bl 2s infinite; }
+    @keyframes bl { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    .theme-btn {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text2); font-family: var(--fm); font-size: .68rem;
+      padding: .28rem .7rem; border-radius: 4px; cursor: pointer;
+      transition: all .15s; display: flex; align-items: center; gap: .4rem;
+    }
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    /* ── PAGE ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 0 2.5rem; position: relative; z-index: 2; }
+    hr.div { border: none; border-top: 1px solid var(--border); }
+
+    /* ── SEC HEADER ── */
+    .sec { padding: 4.5rem 0; }
+    .sec-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2.8rem; }
+    .sec-comment {
+      font-family: var(--fm); font-size: .75rem; color: var(--syn-comment);
+    }
+    .sec-kw { color: var(--syn-purple); }
+    .sec-fn { color: var(--syn-blue); }
+    .sec-paren { color: var(--syn-orange); }
+    .sec-line-el { flex: 1; height: 1px; background: var(--border); transform-origin: left; transform: scaleX(0); transition: transform .7s cubic-bezier(.25,1,.5,1); }
+    .sec-line-el.drawn { transform: scaleX(1); }
+
+    /* ── LINE NUMBERS ── */
+    .lined {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 0;
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    }
+    .line-nums {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 1.2rem 0;
+      counter-reset: ln;
+      display: flex; flex-direction: column;
+    }
+    .ln {
+      counter-increment: ln;
+      font-family: var(--fm); font-size: .68rem;
+      color: var(--text3); text-align: right;
+      padding: .12rem .7rem .12rem 0;
+      line-height: 1.7;
+      user-select: none;
+    }
+    .line-body { padding: 1.2rem 1.5rem; }
+
+    /* ── HERO ── */
+    #hero { padding: 4.5rem 0 4rem; }
+
+    /* Terminal window */
+    .terminal {
+      border: 1px solid var(--border); border-radius: 8px;
+      overflow: hidden; margin-bottom: 3rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,.35);
+      opacity: 0; animation: fadeUp .6s .3s forwards;
+    }
+    .term-bar {
+      background: var(--bg3); border-bottom: 1px solid var(--border);
+      padding: .65rem 1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .tcircle { width: 11px; height: 11px; border-radius: 50%; }
+    .tc-r { background: #ff5f57; }
+    .tc-y { background: #febc2e; }
+    .tc-g { background: #28c840; }
+    .term-title {
+      font-family: var(--fm); font-size: .68rem; color: var(--text3);
+      margin: 0 auto; letter-spacing: .04em;
+    }
+    .term-body {
+      background: var(--bg); padding: 1.5rem 1.8rem;
+      font-family: var(--fm); font-size: .83rem; line-height: 2;
+    }
+    .t-prompt { color: var(--syn-teal); }
+    .t-cmd    { color: var(--text); }
+    .t-str    { color: var(--syn-orange); }
+    .t-kw     { color: var(--syn-purple); }
+    .t-val    { color: var(--syn-blue); }
+    .t-num    { color: var(--syn-yellow); }
+    .t-comment{ color: var(--syn-comment); }
+    .t-fn     { color: var(--syn-green); }
+    .t-type   { color: var(--syn-red); }
+    .t-line   { display: block; }
+    .cursor-blink {
+      display: inline-block; width: 8px; height: 1em;
+      background: var(--syn-green); vertical-align: text-bottom;
+      animation: blink-cur .9s step-end infinite; margin-left: 2px;
+    }
+    @keyframes blink-cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* Hero bottom */
+    .hero-bottom {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 2rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp .6s .7s forwards;
+    }
+    .hero-desc { font-size: .88rem; color: var(--text2); max-width: 440px; line-height: 1.8; }
+    .hero-desc strong { color: var(--text); font-weight: 500; }
+    .hero-ctas { display: flex; gap: .6rem; flex-wrap: wrap; }
+
+    .btn {
+      font-family: var(--fm); font-size: .72rem; font-weight: 500;
+      padding: .5rem 1.2rem; border-radius: 5px;
+      text-decoration: none; display: inline-flex; align-items: center; gap: .45rem;
+      transition: all .18s; border: 1px solid transparent; cursor: pointer;
+    }
+    .btn-green { background: var(--btn-bg); color: var(--btn-fg); border-color: var(--btn-bg); }
+    .btn-green:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(35,134,54,.35); }
+    .btn-ghost { background: transparent; color: var(--text2); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--border2); color: var(--text); transform: translateY(-1px); }
+
+    /* Stats row */
+    .hero-stats {
+      display: flex; gap: 0; margin-top: 2.5rem;
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+      opacity: 0; animation: fadeUp .6s .9s forwards;
+    }
+    .stat {
+      flex: 1; padding: .9rem 1.5rem; border-right: 1px solid var(--border);
+      text-align: center; transition: background .2s; position: relative;
+    }
+    .stat:last-child { border-right: none; }
+    .stat:hover { background: var(--bg2); }
+    .sv { font-family: var(--fm); font-size: 1.3rem; font-weight: 600; color: var(--syn-green); display: block; }
+    .sl { font-size: .6rem; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-top: .1rem; display: block; font-family: var(--fm); }
+
+    /* ── ABOUT ── */
+    .about-grid { display: grid; grid-template-columns: 1fr 280px; gap: 3.5rem; align-items: start; }
+    .about-text p { font-size: .85rem; color: var(--text2); line-height: 1.9; margin-bottom: .9rem; }
+    .about-text p strong { color: var(--syn-blue); font-weight: 400; }
+    .about-text p:first-child { font-size: .9rem; }
+
+    /* code-style info card */
+    .code-card {
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+      font-family: var(--fm);
+    }
+    .code-card-header {
+      background: var(--bg3); border-bottom: 1px solid var(--border);
+      padding: .55rem 1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .code-card-header .fname { font-size: .68rem; color: var(--text3); }
+    .code-card-header .fext  { color: var(--syn-blue); font-size: .68rem; }
+    .cc-body { padding: 1rem 1.2rem; font-size: .75rem; line-height: 2.1; }
+    .cc-row { display: flex; gap: .5rem; }
+    .cc-key  { color: var(--syn-purple); }
+    .cc-colon{ color: var(--text3); }
+    .cc-str  { color: var(--syn-orange); }
+    .cc-link { color: var(--syn-blue); text-decoration: none; }
+    .cc-link:hover { text-decoration: underline; }
+    .cc-avail{ color: var(--syn-teal); display: flex; align-items: center; gap: .4rem; }
+    .cc-avail::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--syn-teal); animation: bl 2s infinite; flex-shrink: 0; }
+    .cc-brace{ color: var(--text3); }
+
+    /* ── SKILLS ── */
+    .skills-code {
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+      font-family: var(--fm); font-size: .78rem;
+    }
+    .skills-code-header {
+      background: var(--bg3); border-bottom: 1px solid var(--border);
+      padding: .55rem 1.2rem; display: flex; align-items: center; gap: .6rem;
+    }
+    .tab-active {
+      background: var(--bg); border: 1px solid var(--border); border-bottom: 1px solid var(--bg);
+      padding: .25rem .8rem; border-radius: 4px 4px 0 0;
+      font-size: .68rem; color: var(--text2); margin-bottom: -1px;
+    }
+    .skills-body { padding: 1.4rem 1.5rem; background: var(--bg); }
+    .sk-row {
+      display: grid; grid-template-columns: 160px 1fr; gap: 1rem;
+      padding: .55rem 0; border-bottom: 1px solid rgba(48,54,61,.6);
+      opacity: 0; transform: translateX(-10px);
+      transition: opacity .4s, transform .4s;
+    }
+    .sk-row.in { opacity: 1; transform: none; }
+    .sk-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .sk-key { color: var(--syn-blue); }
+    .sk-arr { color: var(--text3); margin: 0 .3rem; font-size: .65rem; }
+    .sk-vals { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; }
+    .tag {
+      font-size: .68rem; color: var(--syn-orange);
+      padding: .15rem .55rem; border: 1px solid rgba(255,166,87,.18);
+      border-radius: 3px; background: rgba(255,166,87,.06);
+      font-family: var(--fm);
+      transition: border-color .15s, background .15s, transform .15s;
+      opacity: 0; transform: scale(.9);
+      transition: opacity .3s, transform .3s, border-color .15s, background .15s;
+    }
+    .tag.in { opacity: 1; transform: scale(1); }
+    .tag:hover { border-color: rgba(255,166,87,.45); background: rgba(255,166,87,.1); transform: translateY(-1px); }
+    .sk-comma { color: var(--text3); font-size: .72rem; }
+
+    /* ── EXPERIENCE ── */
+    .exp-item {
+      display: grid; grid-template-columns: 160px 1fr; gap: 2.5rem;
+      padding: 2.2rem 0; border-bottom: 1px solid var(--border);
+    }
+    .exp-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .exp-date { font-family: var(--fm); font-size: .65rem; color: var(--syn-comment); margin-bottom: .5rem; }
+    .exp-badge {
+      display: inline-block; font-size: .6rem; font-family: var(--fm);
+      padding: .12rem .6rem; border: 1px solid rgba(126,231,135,.25);
+      color: var(--syn-green); border-radius: 20px; background: rgba(126,231,135,.07);
+      letter-spacing: .05em;
+    }
+    .exp-role { font-size: .98rem; font-weight: 600; color: var(--text); margin-bottom: .2rem; letter-spacing: -.01em; }
+    .exp-co { font-size: .72rem; color: var(--syn-comment); margin-bottom: 1.1rem; }
+    .exp-list { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .exp-list li {
+      font-size: .8rem; color: var(--text2); line-height: 1.75;
+      padding-left: 1.2rem; position: relative;
+      opacity: 0; transform: translateX(-6px);
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    .exp-list li.in { opacity: 1; transform: none; }
+    .exp-list li::before { content: '//'; position: absolute; left: 0; color: var(--syn-comment); font-family: var(--fm); font-size: .65rem; top: .05em; }
+
+    /* ── PROJECTS ── */
+    .proj-item {
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+      margin-bottom: 1rem; transition: border-color .2s, box-shadow .2s;
+    }
+    .proj-item:last-child { margin-bottom: 0; }
+    .proj-item:hover { border-color: var(--syn-green); box-shadow: 0 0 20px rgba(126,231,135,.06); }
+    .proj-header {
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      padding: .65rem 1.2rem; display: flex; align-items: center; gap: .8rem;
+    }
+    .proj-num-badge {
+      font-family: var(--fm); font-size: .62rem;
+      color: var(--syn-comment); letter-spacing: .05em;
+    }
+    .proj-type-badge {
+      font-size: .6rem; font-family: var(--fm);
+      padding: .1rem .55rem;
+      border: 1px solid rgba(121,192,255,.2);
+      color: var(--syn-blue); border-radius: 3px;
+      background: rgba(121,192,255,.06);
+    }
+    .proj-body { padding: 1.4rem 1.5rem; }
+    .proj-org { font-family: var(--fm); font-size: .65rem; color: var(--syn-comment); margin-bottom: .4rem; }
+    .proj-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: .7rem; letter-spacing: -.01em; }
+    .proj-desc { font-size: .8rem; color: var(--text2); line-height: 1.85; margin-bottom: 1rem; }
+    .proj-stack { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .pill {
+      font-size: .65rem; color: var(--syn-purple);
+      padding: .15rem .55rem; border: 1px solid rgba(210,168,255,.18);
+      border-radius: 3px; font-family: var(--fm); background: rgba(210,168,255,.06);
+      transition: border-color .15s, background .15s;
+    }
+    .proj-item:hover .pill { border-color: rgba(210,168,255,.35); }
+
+    /* ── EDUCATION ── */
+    .edu-block {
+      border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    }
+    .edu-top {
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      padding: .6rem 1.2rem; display: flex; align-items: center; gap: .6rem;
+    }
+    .edu-file { font-family: var(--fm); font-size: .68rem; color: var(--text3); }
+    .edu-file span { color: var(--syn-yellow); }
+    .edu-body { padding: 1.5rem 1.8rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; }
+    .edu-deg { font-size: .98rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; }
+    .edu-school { font-size: .75rem; color: var(--text3); line-height: 1.65; font-family: var(--fm); }
+    .edu-stats-row { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .edu-stat { flex: 1; padding: .7rem 1rem; text-align: center; border-right: 1px solid var(--border); }
+    .edu-stat:last-child { border-right: none; }
+    .esv { font-family: var(--fm); font-size: .95rem; font-weight: 600; color: var(--syn-green); display: block; }
+    .esk { font-size: .58rem; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-top: .12rem; display: block; font-family: var(--fm); }
+    .edu-tags { padding: .75rem 1.8rem; background: var(--bg2); border-top: 1px solid var(--border); display: flex; gap: .35rem; }
+
+    /* ── CONTACT ── */
+    .contact-head { font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.15; margin-bottom: .9rem; }
+    .contact-head .syn { color: var(--syn-green); }
+    .contact-sub { font-size: .85rem; color: var(--text2); max-width: 420px; line-height: 1.8; margin-bottom: 2.2rem; font-family: var(--fm); }
+    .c-links { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 2.2rem; }
+    .c-link {
+      display: inline-flex; align-items: center; gap: .5rem;
+      color: var(--text2); text-decoration: none;
+      font-size: .72rem; padding: .5rem 1rem;
+      border: 1px solid var(--border); border-radius: 5px;
+      background: var(--bg2); font-family: var(--fm);
+      transition: all .18s;
+    }
+    .c-link:hover { border-color: var(--syn-green); color: var(--syn-green); background: rgba(126,231,135,.05); transform: translateY(-1px); }
+    .c-link svg { width: 13px; height: 13px; fill: currentColor; }
+
+    /* ── FOOTER ── */
+    footer { padding: 3rem 0 2rem; }
+    .footer-top {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;
+      padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.8rem;
+    }
+    .footer-brand { font-family: var(--fm); font-size: .85rem; font-weight: 600; color: var(--syn-green); margin-bottom: .4rem; }
+    .footer-tagline { font-size: .72rem; color: var(--text3); line-height: 1.6; font-family: var(--fm); }
+    .footer-col-title { font-size: .6rem; color: var(--syn-comment); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .65rem; font-family: var(--fm); }
+    .footer-links { display: flex; flex-wrap: wrap; align-items: center; row-gap: .35rem; }
+    .footer-links a { font-size: .78rem; color: var(--text2); text-decoration: none; transition: color .15s; font-family: var(--fm); }
+    .footer-links a:hover { color: var(--syn-blue); }
+    .fdot { color: var(--text3); margin: 0 .45rem; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .8rem; }
+    .footer-copy { font-size: .65rem; color: var(--text3); font-family: var(--fm); }
+    .back-top {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .68rem; color: var(--text2); text-decoration: none;
+      padding: .3rem .8rem; border: 1px solid var(--border);
+      border-radius: 4px; font-family: var(--fm); transition: all .15s;
+    }
+    .back-top:hover { border-color: var(--syn-green); color: var(--syn-green); }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .55s ease, transform .55s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    .d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:780px) {
+      nav { padding: 0 1.5rem; }
+      .page { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .sk-row { grid-template-columns: 1fr; }
+      .sk-key { display: none; }
+      .exp-item { grid-template-columns: 1fr; gap: 1rem; }
+      .edu-body { grid-template-columns: 1fr; gap: 1.5rem; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .hero-stats .stat { padding: .7rem 1rem; }
+    }
+    @media(max-width:480px) { .footer-top { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- Scrolling code watermark -->
+<div id="code-bg" aria-hidden="true"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div style="display:flex;align-items:center;gap:2.5rem">
+    <a href="#hero" class="nav-logo">
+      <span class="bracket">[</span>mr<span class="dot">.</span>dev<span class="bracket">]</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#experience">experience</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#education">education</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <div class="nav-status"><span class="status-dot"></span>open to work</div>
+    <button class="theme-btn" id="themeBtn"><span id="themeIcon">☀</span><span id="themeLabel">Light</span></button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ═══ HERO ═══ -->
+  <section id="hero" class="sec" style="padding-top:3.5rem">
+
+  <!-- Terminal window -->
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="tcircle tc-r"></div>
+      <div class="tcircle tc-y"></div>
+      <div class="tcircle tc-g"></div>
+      <span class="term-title">madhanraj.dev — zsh</span>
+    </div>
+    <div class="term-body">
+      <span class="t-line"><span class="t-prompt">madhan@dev</span><span class="t-comment"> ~ </span><span class="t-cmd">whoami</span></span>
+      <span class="t-line"> </span>
+      <span class="t-line"><span class="t-val">Name</span>      <span class="t-comment">Madhan Raj M</span></span>
+      <span class="t-line"><span class="t-val">Role</span>      <span class="t-comment">Full-Stack .NET Developer</span></span>
+      <span class="t-line"><span class="t-val">Company</span>   <span class="t-comment">CCSL · Canara Bank</span></span>
+      <span class="t-line"><span class="t-val">Location</span>  <span class="t-comment">Tiruppur, Tamil Nadu</span></span>
+      <span class="t-line"><span class="t-val">Status</span>    <span class="t-fn">Open to Work ✓</span></span>
+      <span class="t-line"> </span>
+      <span class="t-line"><span class="t-prompt">madhan@dev</span><span class="t-comment"> ~ </span><span class="cursor-blink"></span></span>
+    </div>
+  </div>
+
+  <!-- Hero bottom row -->
+  <div class="hero-bottom">
+    <div class="hero-desc">
+      Building <strong>enterprise banking systems</strong> and scalable web applications.<br>
+      Passionate about clean code, efficient architecture, and shipping things that matter.
+    </div>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn btn-green">View Projects →</a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat"><span class="sv">2+</span><span class="sl">years_exp</span></div>
+    <div class="stat"><span class="sv">3+</span><span class="sl">live_projects</span></div>
+    <div class="stat"><span class="sv">8.45</span><span class="sl">cgpa</span></div>
+    <div class="stat"><span class="sv">∞</span><span class="sl">curiosity</span></div>
+  </div>
+
+</section>
+
+  <hr class="div"/>
+
+  <!-- ═══ ABOUT ═══ -->
+  <section id="about" class="sec">
+    <div class="sec-header reveal">
+      <span class="sec-comment"><span class="sec-kw">const</span> <span class="sec-fn">about</span> <span style="color:var(--text3)">=</span></span>
+      <span class="sec-line-el"></span>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal d1">
+        <p>I'm a dedicated developer building things that are efficient, reliable, and built to last.</p>
+        <p>As a <strong>.NET Developer</strong> with 2+ years of experience, I have a strong command of the Microsoft ecosystem and a passion for writing clean, scalable code.</p>
+        <p>Currently at <strong>Canbank Computer Services Ltd (CCSL)</strong>, a subsidiary of Canara Bank, I build enterprise banking systems serving audit, compliance, and operational workflows across India.</p>
+        <p>I enjoy working full-stack — from PL/SQL stored procedures and C# controllers to responsive jQuery front-ends — and thrive in teams that move fast and care about quality.</p>
+      </div>
+      <div class="code-card reveal d2">
+        <div class="code-card-header">
+          <div class="tcircle tc-r" style="width:9px;height:9px"></div>
+          <div class="tcircle tc-y" style="width:9px;height:9px"></div>
+          <div class="tcircle tc-g" style="width:9px;height:9px"></div>
+          <span class="fname">profile</span><span class="fext">.json</span>
+        </div>
+        <div class="cc-body">
+          <div class="cc-row"><span class="cc-brace">{</span></div>
+          <div class="cc-row"><span style="width:1rem;display:inline-block"></span><span class="cc-key">"name"</span><span class="cc-colon">:</span>&nbsp;<span class="cc-str">"Madhan Raj M"</span>,</div>
+          <div class="cc-row"><span style="width:1rem;display:inline-block"></span><span class="cc-key">"role"</span><span class="cc-colon">:</span>&nbsp;<span class="cc-str">"Full Stack .NET Dev"</span>,</div>
+          <div class="cc-row"><span style="width:1rem;display:inline-block"></span><span class="cc-key">"email"</span><span class="cc-colon">:</span>&nbsp;<a href="mailto:mariraj444@gmail.com" class="cc-link">"mariraj444@gmail.com"</a>,</div>
+          <div class="cc-row"><span style="width:1rem;display:inline-block"></span><span class="cc-key">"phone"</span><span class="cc-colon">:</span>&nbsp;<span class="cc-str">"+91-8248121614"</span>,</div>
+          <div class="cc-row"><span style="width:1rem;display:inline-block"></span><span class="cc-key">"location"</span><span class="cc-colon">:</span>&nbsp;<span class="cc-str">"Tiruppur, TN"</span>,</div>
+          <div class="cc-row"><span style="width:1rem;display:inline-block"></span><span class="cc-key">"status"</span><span class="cc-colon">:</span>&nbsp;<span class="cc-avail">"open_to_roles"</span></div>
+          <div class="cc-row"><span class="cc-brace">}</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div"/>
+
+  <!-- ═══ SKILLS ═══ -->
+  <section id="skills" class="sec">
+    <div class="sec-header reveal">
+      <span class="sec-comment"><span class="sec-kw">const</span> <span class="sec-fn">skills</span> <span style="color:var(--text3)">=</span></span>
+      <span class="sec-line-el"></span>
+    </div>
+    <div class="skills-code reveal d1">
+      <div class="skills-code-header">
+        <div class="tab-active">skills.ts</div>
+      </div>
+      <div class="skills-body">
+        <div class="sk-row">
+          <span class="sk-key">languages<span class="sk-arr">:</span></span>
+          <div class="sk-vals">
+            <span class="tag">C#</span><span class="tag">JavaScript</span><span class="tag">PL/SQL</span><span class="tag">HTML5</span><span class="tag">CSS3</span>
+          </div>
+        </div>
+        <div class="sk-row">
+          <span class="sk-key">frameworks<span class="sk-arr">:</span></span>
+          <div class="sk-vals">
+            <span class="tag">ASP.NET MVC Core</span><span class="tag">ASP.NET</span><span class="tag">ADO.NET</span><span class="tag">.NET 4.7.2</span>
+          </div>
+        </div>
+        <div class="sk-row">
+          <span class="sk-key">databases<span class="sk-arr">:</span></span>
+          <div class="sk-vals">
+            <span class="tag">MS SQL Server</span><span class="tag">Oracle</span><span class="tag">PL/SQL</span><span class="tag">TOAD</span><span class="tag">Stored Procs</span>
+          </div>
+        </div>
+        <div class="sk-row">
+          <span class="sk-key">frontend<span class="sk-arr">:</span></span>
+          <div class="sk-vals">
+            <span class="tag">jQuery</span><span class="tag">AJAX</span><span class="tag">Bootstrap</span><span class="tag">Responsive UI</span>
+          </div>
+        </div>
+        <div class="sk-row">
+          <span class="sk-key">practices<span class="sk-arr">:</span></span>
+          <div class="sk-vals">
+            <span class="tag">SDLC</span><span class="tag">Agile</span><span class="tag">OOPS</span><span class="tag">Design Patterns</span><span class="tag">IIS</span>
+          </div>
+        </div>
+        <div class="sk-row">
+          <span class="sk-key">soft_skills<span class="sk-arr">:</span></span>
+          <div class="sk-vals">
+            <span class="tag">Client Interaction</span><span class="tag">Requirement Docs</span><span class="tag">Team Collab</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div"/>
+
+  <!-- ═══ EXPERIENCE ═══ -->
+  <section id="experience" class="sec">
+    <div class="sec-header reveal">
+      <span class="sec-comment"><span class="sec-kw">const</span> <span class="sec-fn">experience</span> <span style="color:var(--text3)">=</span></span>
+      <span class="sec-line-el"></span>
+    </div>
+
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">// 2024 — 2026</div>
+        <span class="exp-badge">● current</span>
+      </div>
+      <div>
+        <h3 class="exp-role">Full Stack .NET Developer</h3>
+        <p class="exp-co">Canbank Computer Services Ltd (CCSL) · Canara Bank IT Sector</p>
+        <ul class="exp-list">
+          <li>Designed enterprise web apps using ASP.NET MVC Core, C#, and ADO.NET.</li>
+          <li>Built banking modules and internal automation tools for operational efficiency.</li>
+          <li>Maintained complex DB logic — stored procedures in Oracle PL/SQL & SQL Server.</li>
+          <li>Integrated responsive front-end interfaces with backend logic alongside UI/UX teams.</li>
+          <li>Covered full SDLC: requirements → development → testing → debugging → production.</li>
+          <li>Delivered in agile environment within a large, regulated banking IT organisation.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item reveal d1">
+      <div>
+        <div class="exp-date">// 2023 — 2024</div>
+      </div>
+      <div>
+        <h3 class="exp-role">.NET Developer Trainee</h3>
+        <p class="exp-co">Cloud Service for All</p>
+        <ul class="exp-list">
+          <li>Created and maintained web-based applications with designers and developers.</li>
+          <li>Designed scalable systems using ASP.NET and MS SQL Server with stored procedure tuning.</li>
+          <li>Strengthened OOPS fundamentals, design patterns, and clean code principles.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div"/>
+
+  <!-- ═══ PROJECTS ═══ -->
+  <section id="projects" class="sec">
+    <div class="sec-header reveal">
+      <span class="sec-comment"><span class="sec-kw">const</span> <span class="sec-fn">projects</span> <span style="color:var(--text3)">=</span></span>
+      <span class="sec-line-el"></span>
+    </div>
+
+    <div class="proj-item reveal">
+      <div class="proj-header">
+        <span class="proj-num-badge">// 01</span>
+        <span class="proj-type-badge">audit-system</span>
+      </div>
+      <div class="proj-body">
+        <p class="proj-org">CCSL · Canara Bank Inspection Wing</p>
+        <h3 class="proj-title">MASCO — Management Audit System Circle Office</h3>
+        <p class="proj-desc">Web-based audit management system digitising audit processes across branches and circle offices. Audit report generation, observation entry, annexure uploads, and automated stage-wise workflow (IO → RO → ZI → HO → SA).</p>
+        <div class="proj-stack"><span class="pill">ASP.NET MVC Core</span><span class="pill">C#</span><span class="pill">PL/SQL</span><span class="pill">TOAD</span><span class="pill">AJAX</span><span class="pill">jQuery</span></div>
+      </div>
+    </div>
+
+    <div class="proj-item reveal d1">
+      <div class="proj-header">
+        <span class="proj-num-badge">// 02</span>
+        <span class="proj-type-badge">compliance</span>
+      </div>
+      <div class="proj-body">
+        <p class="proj-org">CCSL · Canara Bank Head Office</p>
+        <h3 class="proj-title">SBA – LFAR (Statutory Branch Audit & Long Form Audit Report)</h3>
+        <p class="proj-desc">Digitalised RBI-mandated Statutory Branch Audits and LFAR processes. Modules for audit planning, branch verification, and LFAR report generation with secure database management ensuring auditor independence and RBI compliance.</p>
+        <div class="proj-stack"><span class="pill">ASP.NET MVC Core</span><span class="pill">C#</span><span class="pill">PL/SQL</span><span class="pill">TOAD</span><span class="pill">jQuery</span><span class="pill">AJAX</span></div>
+      </div>
+    </div>
+
+    <div class="proj-item reveal d2">
+      <div class="proj-header">
+        <span class="proj-num-badge">// 03</span>
+        <span class="proj-type-badge">fintech</span>
+      </div>
+      <div class="proj-body">
+        <p class="proj-org">CCSL · Canara Bank</p>
+        <h3 class="proj-title">Credit Audit System</h3>
+        <p class="proj-desc">Digitalised post-sanction Credit Audits for loan exposures of ₹5 Crores and above. Automated end-to-end workflows: auditor allotment, document submission, compliance tracking, digital signing, and closure across Branch → RO → CO → HO.</p>
+        <div class="proj-stack"><span class="pill">ASP.NET</span><span class="pill">C#</span><span class="pill">Oracle</span><span class="pill">Bootstrap</span><span class="pill">AJAX</span><span class="pill">jQuery</span></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div"/>
+
+  <!-- ═══ EDUCATION ═══ -->
+  <section id="education" class="sec">
+    <div class="sec-header reveal">
+      <span class="sec-comment"><span class="sec-kw">const</span> <span class="sec-fn">education</span> <span style="color:var(--text3)">=</span></span>
+      <span class="sec-line-el"></span>
+    </div>
+    <div class="edu-block reveal d1">
+      <div class="edu-top">
+        <span class="edu-file">📄 degree<span>.json</span></span>
+      </div>
+      <div class="edu-body">
+        <div>
+          <h3 class="edu-deg">BE — Computer Science & Engineering</h3>
+          <p class="edu-school">Sri Krishna College of Engineering and Technology<br>Coimbatore, Tamil Nadu</p>
+        </div>
+        <div class="edu-stats-row">
+          <div class="edu-stat"><span class="esv">B.E.</span><span class="esk">degree</span></div>
+          <div class="edu-stat"><span class="esv">2019-23</span><span class="esk">period</span></div>
+          <div class="edu-stat"><span class="esv">8.45</span><span class="esk">cgpa</span></div>
+        </div>
+      </div>
+      <div class="edu-tags">
+        <span class="tag in">Computer Science</span><span class="tag in">Engineering</span><span class="tag in">Full-time</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="div"/>
+
+  <!-- ═══ CONTACT ═══ -->
+  <section id="contact" class="sec">
+    <div class="sec-header reveal">
+      <span class="sec-comment"><span class="sec-kw">const</span> <span class="sec-fn">contact</span> <span style="color:var(--text3)">=</span></span>
+      <span class="sec-line-el"></span>
+    </div>
+    <h2 class="contact-head reveal d1">Let's build <span class="syn">something</span><br>great together</h2>
+    <p class="contact-sub reveal d2">// Open to new roles, collabs, and interesting problems.<br>// Drop me a message — I'd love to connect.</p>
+    <div class="c-links reveal d3">
+      <a href="mailto:mariraj444@gmail.com" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        mariraj444@gmail.com
+      </a>
+      <a href="tel:+918248121614" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+        +91-8248121614
+      </a>
+      <a href="#" class="c-link">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+        Tiruppur, TN
+      </a>
+    </div>
+    <a href="mailto:mariraj444@gmail.com" class="btn btn-green reveal d4">Say Hello →</a>
+  </section>
+
+  <hr class="div"/>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">[mr.dev]</div>
+        <p class="footer-tagline">// Full-Stack .NET Developer<br>// Tiruppur, TN · open_to_work: true</p>
+      </div>
+      <div>
+        <p class="footer-col-title">connect</p>
+        <div class="footer-links">
+          <a href="mailto:mariraj444@gmail.com">email</a><span class="fdot">·</span>
+          <a href="#">linkedin</a><span class="fdot">·</span>
+          <a href="#">github</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-title">navigate</p>
+        <div class="footer-links">
+          <a href="#about">about</a><span class="fdot">·</span>
+          <a href="#skills">skills</a><span class="fdot">·</span>
+          <a href="#experience">exp</a><span class="fdot">·</span>
+          <a href="#projects">projects</a><span class="fdot">·</span>
+          <a href="#education">edu</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">// © 2026 Madhan Raj M · built from scratch · open_to_work = true</span>
+      <a href="#hero" class="back-top">back_to_top() ↑</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+/* ═══ CODE BG WATERMARK ═══ */
+const codeBg = document.getElementById('code-bg');
+const codeLines = [
+  'using System;','using Microsoft.AspNetCore.Mvc;','using Oracle.DataAccess.Client;','',
+  'namespace BankingSystem.Controllers','{','  [Route("api/[controller]")]','  public class AuditController : ControllerBase','  {',
+  '    private readonly IDbService _db;','','    [HttpGet("reports")]',
+  '    public async Task<IActionResult> GetReports()',
+  '    {','      var result = await _db.ExecuteAsync(',
+  '        "SP_GET_AUDIT_REPORTS", new { Status = "PENDING" }',
+  '      );','      return Ok(result);','    }','',
+  '    [HttpPost("submit")]',
+  '    public IActionResult Submit([FromBody] AuditModel model)',
+  '    {','      if (!ModelState.IsValid) return BadRequest();',
+  '      _db.Execute("SP_SUBMIT_AUDIT", model);',
+  '      return Ok(new { success = true });','    }','  }','}','',
+  'CREATE OR REPLACE PROCEDURE SP_GET_AUDIT_REPORTS','AS','BEGIN',
+  '  SELECT audit_id, branch_code, status',
+  '  FROM   audit_master','  WHERE  status = :p_status','  ORDER BY created_date DESC;','END;','/',
+  '','-- Index for performance','CREATE INDEX idx_audit_status','ON audit_master(status, created_date DESC);','',
+  '$(document).ready(function() {',
+  '  $("#submitBtn").on("click", function() {',
+  '    $.ajax({','      url: "/api/audit/submit",','      type: "POST",',
+  '      data: JSON.stringify(getFormData()),',
+  '      contentType: "application/json",',
+  '      success: function(res) {',
+  '        showNotification("Submitted ✓");','      }','    });','  });','});',
+];
+const doubled = [...codeLines, ...codeLines];
+codeBg.textContent = doubled.join('\n');
+
+/* ═══ THEME ═══ */
+const html = document.documentElement;
+const btn  = document.getElementById('themeBtn');
+const icon = document.getElementById('themeIcon');
+const lbl  = document.getElementById('themeLabel');
+let isLight = false;
+btn.addEventListener('click', () => {
+  isLight = !isLight;
+  html.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  icon.textContent = isLight ? '🌙' : '☀';
+  lbl.textContent  = isLight ? 'Dark' : 'Light';
+});
+
+/* ═══ PROGRESS ═══ */
+window.addEventListener('scroll', () => {
+  const sc = document.documentElement.scrollTop;
+  const sh = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.width = (sc / sh * 100) + '%';
+});
+
+/* ═══ ACTIVE NAV ═══ */
+document.querySelectorAll('section[id]').forEach(s =>
+  new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+        const l = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (l) l.classList.add('active');
+      }
+    });
+  }, { threshold: .3 }).observe(s)
+);
+
+/* ═══ INTERSECTION OBSERVER ═══ */
+const ro = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const t = e.target;
+
+    if (t.classList.contains('reveal')) t.classList.add('in');
+
+    if (t.classList.contains('sec-header')) {
+      const line = t.querySelector('.sec-line-el');
+      if (line) setTimeout(() => line.classList.add('drawn'), 100);
+    }
+
+    if (t.classList.contains('skills-code')) {
+      t.querySelectorAll('.sk-row').forEach((r, i) => {
+        setTimeout(() => r.classList.add('in'), i * 90);
+        r.querySelectorAll('.tag').forEach((tag, j) => {
+          setTimeout(() => tag.classList.add('in'), i * 90 + j * 45 + 120);
+        });
+      });
+    }
+
+    if (t.classList.contains('exp-item')) {
+      t.querySelectorAll('.exp-list li').forEach((li, i) => {
+        setTimeout(() => li.classList.add('in'), 200 + i * 65);
+      });
+    }
+
+    ro.unobserve(t);
+  });
+}, { threshold: .07 });
+
+document.querySelectorAll('.reveal, .skills-code, .exp-item').forEach(el => ro.observe(el));
+document.querySelectorAll('.sec-header').forEach(el => ro.observe(el));
+</script>
+</body>
+</html>
